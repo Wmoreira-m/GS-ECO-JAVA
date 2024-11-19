@@ -25,7 +25,7 @@ public class ConsumoResource {
                         .build();
             }
 
-            // Verifica se o endereço existe
+
             if (!consumoDao.enderecoExiste(consumo.getIdEndereco())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço com ID " + consumo.getIdEndereco() + " não encontrado.\"}")
@@ -60,7 +60,7 @@ public class ConsumoResource {
                         .build();
             }
 
-            // Verifica se o endereço existe para o cliente
+
             boolean enderecoExisteParaCliente = consumoDao.enderecoExiste(idEndereco);
 
             if (!enderecoExisteParaCliente) {
@@ -69,12 +69,12 @@ public class ConsumoResource {
                         .build();
             }
 
-            // Busca os consumos no DAO
+
             List<Consumo> consumos = consumoDao.buscarConsumosPorClienteEEndereco(idCliente, idEndereco);
 
-            // Verifica se há consumos
+
             if (consumos.isEmpty()) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum consumo encontrado para o cliente e endereço especificados.\"}")
                         .build();
             }
@@ -116,7 +116,7 @@ public class ConsumoResource {
             }
 
             if (!consumoDao.consumoExiste(idCliente, idEndereco)) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum consumo encontrado para o cliente e endereço especificados.\"}")
                         .build();
             }
@@ -135,28 +135,28 @@ public class ConsumoResource {
     @Path("/cliente/{idCliente}/endereco/{idEndereco}")
     public Response removerConsumo(@PathParam("idCliente") int idCliente, @PathParam("idEndereco") int idEndereco) {
         try {
-            // Verifica se o cliente existe
+
             if (!consumoDao.clienteExiste(idCliente)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
 
-            // Verifica se o endereço existe
+
             if (!consumoDao.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço não encontrado.\"}")
                         .build();
             }
 
-            // Verifica se existe consumo associado ao cliente e endereço
+
             if (!consumoDao.consumoExiste(idCliente, idEndereco)) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum consumo encontrado para o cliente e endereço especificados.\"}")
                         .build();
             }
 
-            // Remove o consumo
+
             consumoDao.removerConsumo(idCliente, idEndereco);
 
             return Response.status(Response.Status.OK)

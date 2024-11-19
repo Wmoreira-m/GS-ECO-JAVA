@@ -34,7 +34,7 @@ public class ConsumoDao {
 
             stmt.setInt(1, idCliente);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();  // Retorna true se o cliente existir
+                return rs.next();
             }
         }
     }
@@ -88,7 +88,7 @@ public class ConsumoDao {
             stmt.setInt(1, idCliente);
             stmt.setInt(2, idEndereco);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // Retorna true se existe consumo
+                return rs.next();
             }
         }
     }
@@ -106,7 +106,7 @@ public class ConsumoDao {
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Setando os parâmetros para a query
+
             stmt.setDouble(1, consumoAtualizado.getCustoMensal());
             stmt.setDouble(2, consumoAtualizado.getKwMes());
             stmt.setString(3, consumoAtualizado.getDistribuidora());
@@ -115,15 +115,14 @@ public class ConsumoDao {
             stmt.setInt(6, idCliente);
             stmt.setInt(7, idEndereco);
 
-            // Executando a atualização
+
             int rowsUpdated = stmt.executeUpdate();
 
-            // Se nenhuma linha foi atualizada, lançar uma exceção
+
             if (rowsUpdated == 0) {
                 throw new SQLException("Erro ao atualizar o consumo: Nenhuma linha foi afetada.");
             }
         } catch (SQLException e) {
-            // Lança uma exceção com uma mensagem detalhada
             throw new SQLException("Erro ao atualizar o consumo.", e);
         }
     }

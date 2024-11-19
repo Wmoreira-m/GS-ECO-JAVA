@@ -1,9 +1,7 @@
 package br.com.fiap.eco.dao;
 
 import br.com.fiap.eco.connection.ConexaoBanco;
-import br.com.fiap.eco.model.Cliente;
 import br.com.fiap.eco.model.Endereco;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,14 +115,14 @@ public class EnderecoDao {
 
 
     public boolean verificarClienteExistente(int idCliente) throws SQLException {
-        String sql = "SELECT 1 FROM T_ECO_CLIENTE WHERE ID_CLIENTE = ?";  // Ajuste conforme a tabela de clientes
+        String sql = "SELECT 1 FROM T_ECO_CLIENTE WHERE ID_CLIENTE = ?";
 
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idCliente);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();  // Se o cliente existir, retorna true
+                return rs.next();
             }
 
         } catch (SQLException e) {
@@ -173,7 +171,6 @@ public class EnderecoDao {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Erro ao remover endereço: " + e.getMessage());
             throw new SQLException("Erro ao remover endereço.", e);
         }
     }

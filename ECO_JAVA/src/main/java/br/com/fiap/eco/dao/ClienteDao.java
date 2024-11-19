@@ -2,7 +2,6 @@ package br.com.fiap.eco.dao;
 
 import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.model.Cliente;
-
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ public class ClienteDao {
             } else {
                 errorMessage += e.getMessage();
             }
-            System.err.println(errorMessage);
             throw new SQLException(errorMessage, e);
         }
     }
@@ -51,12 +49,8 @@ public class ClienteDao {
                         rs.getString("SENHA"),
                         rs.getString("DT_ATIVACAO")
                 );
-            } else {
-                System.err.println("Cliente com email " + email + " não encontrado.");
             }
-
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar cliente por email: " + e.getMessage());
             throw new SQLException("Erro ao buscar cliente.", e);
         }
         return cliente;
@@ -80,12 +74,8 @@ public class ClienteDao {
                         rs.getString("SENHA"),
                         rs.getString("DT_ATIVACAO")
                 );
-            } else {
-                System.err.println("Cliente com ID: " + id + " não encontrado.");
             }
-
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar cliente por ID: " + e.getMessage());
             throw new SQLException("Erro ao buscar cliente.", e);
         }
         return cliente;
@@ -114,11 +104,9 @@ public class ClienteDao {
                             rs.getString("DT_ATIVACAO")
                     );
                 } else {
-                    System.err.println("Senha incorreta para o email: " + email);
                     throw new SQLException("Senha incorreta");
                 }
             } else {
-                System.err.println("Cliente com email: " + email + " não encontrado.");
                 throw new SQLException("email não encontrado");
             }
 
@@ -150,7 +138,6 @@ public class ClienteDao {
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao listar clientes: " + e.getMessage());
             throw new SQLException("Erro ao listar clientes.", e);
         }
         return clientes;
@@ -212,7 +199,6 @@ public class ClienteDao {
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao remover cliente: " + e.getMessage());
             throw new SQLException("Erro ao remover cliente.", e);
         }
     }

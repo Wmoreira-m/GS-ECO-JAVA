@@ -16,7 +16,7 @@ public class ConsumoSimulacaoDao {
                 "KW_TOTAL_GERADO, ECONOMIA_GERADA, TOTAL_INVESTIR, ID_CONSUMO_CLI, ID_ENDERECO, GRID, DT_SIMULACAO) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Chama o método para obter a data do consumo
+
         dataConsumo = buscarDataConsumo(simulacao.getIdConsumoCli());
 
         try (Connection conn = ConexaoBanco.getConnection();
@@ -32,8 +32,8 @@ public class ConsumoSimulacaoDao {
             stmt.setInt(8, simulacao.getIdConsumoCli());
             stmt.setInt(9, simulacao.getIdEndereco());
             stmt.setString(10, simulacao.getGrid());
-            stmt.setString(11, dataConsumo); // Usa a data do consumo obtida
-            stmt.executeUpdate(); // Executa a inserção
+            stmt.setString(11, dataConsumo);
+            stmt.executeUpdate();
         }
     }
 
@@ -83,7 +83,7 @@ public class ConsumoSimulacaoDao {
 
             stmt.setInt(1, idConsumoCli);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // Retorna true se existir
+                return rs.next();
             }
         }
     }
@@ -97,7 +97,7 @@ public class ConsumoSimulacaoDao {
             stmt.setInt(1, idConsumoCli);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("DATA_CONSUMO"); // Retorna a data como String
+                    return rs.getString("DATA_CONSUMO");
                 } else {
                     throw new SQLException("Consumo não encontrado para o ID fornecido.");
                 }
@@ -155,7 +155,7 @@ public class ConsumoSimulacaoDao {
                 }
             }
         }
-        return null; // Se não encontrar, retorna null
+        return null;
     }
 
     public boolean clienteExiste(int idCliente) throws SQLException {

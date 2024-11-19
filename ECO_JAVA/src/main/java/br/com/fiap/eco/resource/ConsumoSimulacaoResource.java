@@ -17,40 +17,40 @@ public class ConsumoSimulacaoResource {
     @POST
     public Response criarSimulacao(ConsumoSimulacao simulacao) {
         try {
-            // Verificar se o cliente existe
+
             if (!simulacaoDAO.clienteExiste(simulacao.getIdCliente())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente com ID " + simulacao.getIdCliente() + " não encontrado.\"}")
                         .build();
             }
 
-            // Verificar se o endereço existe
+
             if (!simulacaoDAO.enderecoExiste(simulacao.getIdEndereco())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço com ID " + simulacao.getIdEndereco() + " não encontrado.\"}")
                         .build();
             }
 
-            // Verificar se o consumo existe
+
             if (!simulacaoDAO.consumoExiste(simulacao.getIdConsumoCli())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Consumo com ID " + simulacao.getIdConsumoCli() + " não encontrado.\"}")
                         .build();
             }
 
-            // Obter a data do consumo
+
             String dataConsumo = simulacaoDAO.buscarDataConsumo(simulacao.getIdConsumoCli());
 
-            // Criar a simulação, agora com a data do consumo
+
             simulacaoDAO.criarSimulacao(simulacao, dataConsumo);
 
-            // Retornar a simulação criada com status CREATED
+
             return Response.status(Response.Status.CREATED)
                     .entity(simulacao)
                     .build();
 
         } catch (SQLException e) {
-            // Logar o erro para rastrear problemas
+
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao criar a simulação: " + e.getMessage() + "\"}")
@@ -59,7 +59,7 @@ public class ConsumoSimulacaoResource {
     }
 
 
-    // Atualizar simulação
+
     @PUT
     @Path("/cliente/{idCliente}/endereco/{idEndereco}/simulacao/{idConsumoSimu}")
     public Response atualizarSimulacao(
@@ -69,7 +69,7 @@ public class ConsumoSimulacaoResource {
             ConsumoSimulacao simulacaoAtualizada) {
 
         try {
-            // Verifica se a simulação existe
+
             ConsumoSimulacao simulacaoExistente = simulacaoDAO.buscarSimulacaoPorId(idConsumoSimu);
             if (simulacaoExistente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -77,7 +77,7 @@ public class ConsumoSimulacaoResource {
                         .build();
             }
 
-            // Verifica se o cliente e endereço associados existem
+
             if (simulacaoExistente.getIdCliente() != idCliente || simulacaoExistente.getIdEndereco() != idEndereco) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("{\"message\": \"Cliente ou endereço não correspondem à simulação.\"}")
@@ -88,10 +88,10 @@ public class ConsumoSimulacaoResource {
                 simulacaoExistente.setGrid(simulacaoAtualizada.getGrid());
             }
 
-            // Obtém a data de consumo
+
             String dataConsumo = simulacaoDAO.buscarDataConsumo(simulacaoExistente.getIdConsumoCli());
 
-            // Atualiza a simulação no banco
+
             simulacaoDAO.atualizarSimulacao(simulacaoExistente, dataConsumo);
 
             return Response.ok(simulacaoExistente).build();
@@ -111,25 +111,25 @@ public class ConsumoSimulacaoResource {
             @PathParam("idEndereco") int idEndereco) {
 
         try {
-            // Verifica se o cliente existe
+
             if (!simulacaoDAO.clienteExiste(idCliente)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
 
-            // Verifica se o endereço existe
+
             if (!simulacaoDAO.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço não encontrado.\"}")
                         .build();
             }
 
-            // Busca lista de simulações
+
             List<ConsumoSimulacao> simulacoes = simulacaoDAO.buscarSimulacoes(idCliente, idEndereco);
 
             if (simulacoes.isEmpty()) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhuma simulação encontrada para o cliente e endereço especificados.\"}")
                         .build();
             }
@@ -152,28 +152,28 @@ public class ConsumoSimulacaoResource {
             @PathParam("idConsumoSimu") int idConsumoSimu) {
 
         try {
-            // Verifica se o cliente existe
+
             if (!simulacaoDAO.clienteExiste(idCliente)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
 
-            // Verifica se o endereço existe
+
             if (!simulacaoDAO.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço não encontrado.\"}")
                         .build();
             }
 
-            // Verifica se a simulação específica existe
+
             if (!simulacaoDAO.simulacaoExiste(idCliente, idEndereco, idConsumoSimu)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Simulação não encontrada.\"}")
                         .build();
             }
 
-            // Remove a simulação específica
+
             simulacaoDAO.removerSimulacaoEspecifica(idCliente, idEndereco, idConsumoSimu);
 
             return Response.ok("{\"message\": \"Simulação deletada com sucesso.\"}")

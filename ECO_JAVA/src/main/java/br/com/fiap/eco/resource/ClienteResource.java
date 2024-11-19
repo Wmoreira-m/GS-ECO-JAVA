@@ -14,7 +14,7 @@ public class ClienteResource {
 
     private ClienteDao clienteDao = new ClienteDao();
 
-    // Inserir um novo cliente
+
     @POST
     public Response criarCliente(Cliente cliente, @Context UriInfo uriInfo) {
         try {
@@ -31,7 +31,7 @@ public class ClienteResource {
         }
     }
 
-    // Buscar cliente por ID
+
     @GET
     @Path("/{id}")
     public Response buscarClientePorId(@PathParam("id") int id) {
@@ -39,7 +39,7 @@ public class ClienteResource {
             Cliente cliente = clienteDao.buscarClientePorId(id);
             if (cliente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Cliente não encontrado")
+                        .entity("Cliente não encontrado. Tente Novamente!")
                         .build();
             }
             return Response.ok(cliente).build();
@@ -51,7 +51,6 @@ public class ClienteResource {
         }
     }
 
-    // Buscar cliente por email
     @GET
     @Path("/email/{email}")
     public Response buscarClientePorEmail(@PathParam("email") String email) {
@@ -59,7 +58,7 @@ public class ClienteResource {
             Cliente cliente = clienteDao.buscarClientePorEmail(email);
             if (cliente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Cliente não encontrado")
+                        .entity("Cliente não encontrado. Tente Novamente!")
                         .build();
             }
             return Response.ok(cliente).build();
@@ -71,7 +70,6 @@ public class ClienteResource {
         }
     }
 
-    // Buscar cliente por login (email e senha)
     @GET
     @Path("/login")
     public Response loginCliente(@QueryParam("email") String email, @QueryParam("senha") String senha) {
@@ -80,13 +78,13 @@ public class ClienteResource {
             return Response.ok(cliente).build();
         } catch (SQLException e) {
             String errorMessage = e.getMessage();
-            if (errorMessage.equals("email não encontrado")) {
+            if (errorMessage.equals("Email não encontrado. Tente Novamente!")) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"email não encontrado\"}")
+                        .entity("{\"message\": \"Email não encontrado. Tente Novamente!\"}")
                         .build();
             } else if (errorMessage.equals("Senha incorreta")) {
                 return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity("{\"message\": \"Senha incorreta\"}")
+                        .entity("{\"message\": \"Senha incorreta. Tente Novamente!\"}")
                         .build();
             }
             return Response.status(Response.Status.NOT_FOUND)
@@ -117,7 +115,7 @@ public class ClienteResource {
         }
     }
 
-    // Atualizar cliente
+
     @PUT
     @Path("/{id}")
     public Response atualizarCliente(@PathParam("id") int id, Cliente cliente) {
@@ -133,7 +131,7 @@ public class ClienteResource {
         }
     }
 
-    // Remover cliente
+
     @DELETE
     @Path("/{id}")
     public Response removerCliente(@PathParam("id") int id) {

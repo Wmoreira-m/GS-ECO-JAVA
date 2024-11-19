@@ -1,18 +1,10 @@
 package br.com.fiap.eco.resource;
 
-import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.dao.EnderecoDao;
-import br.com.fiap.eco.model.Cliente;
 import br.com.fiap.eco.model.Endereco;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Path("/endereco")
@@ -42,7 +34,7 @@ public class EnderecoResource {
             List<Endereco> enderecos = enderecoDao.listar();
 
             if (enderecos.isEmpty()) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum endereço encontrado.\"}")
                         .build();
             }
@@ -51,7 +43,7 @@ public class EnderecoResource {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao buscar endereços: " + e.getMessage() + "\"}")
                     .build();
         }
@@ -87,7 +79,7 @@ public class EnderecoResource {
     @Path("/{idCliente}")
     public Response buscarEnderecosPorCliente(@PathParam("idCliente") int idCliente) {
         try {
-            // Verifica se o cliente existe
+
             boolean clienteExiste = enderecoDao.verificarClienteExistente(idCliente); // Método que você terá que implementar
             if (!clienteExiste) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -95,16 +87,16 @@ public class EnderecoResource {
                         .build();
             }
 
-            // Busca os endereços do cliente
+
             List<Endereco> enderecos = enderecoDao.buscarEnderecosPorCliente(idCliente);
 
             if (enderecos.isEmpty()) {
-                return Response.status(Response.Status.OK)
+                return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum endereço encontrado para o cliente com ID: " + idCliente + "\"}")
                         .build();
             }
 
-            // Retorna a lista de endereços do cliente
+
             return Response.ok(enderecos).build();
 
         } catch (SQLException e) {
@@ -126,7 +118,7 @@ public class EnderecoResource {
                         .build();
             }
             enderecoDao.removerEndereco(id);
-            return Response.status(Response.Status.OK).entity("Endereço removido com sucesso.").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Endereço removido com sucesso.").build();
         } catch (SQLException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
