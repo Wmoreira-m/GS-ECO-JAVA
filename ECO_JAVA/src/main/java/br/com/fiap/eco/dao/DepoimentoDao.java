@@ -9,7 +9,7 @@ import java.util.List;
 public class DepoimentoDao {
 
     public List<Depoimento> buscarTodos() throws SQLException {
-        String sql = "SELECT d.ID_DEPOIMENTO, d.ID_CLIENTE, d.DESCRICAO, c.NOME AS NOME_CLIENTE " +
+        String sql = "SELECT d.ID_DEPOIMENTO, d.ID_CLIENTE, d.DESCRICAO, c.NOME AS NOME_CLIENTE, d.DT_DEPOIMENTO " +
                 "FROM T_ECO_DEPOIMENTOS d " +
                 "JOIN T_ECO_CLIENTE c ON d.ID_CLIENTE = c.ID_CLIENTE";
 
@@ -25,6 +25,7 @@ public class DepoimentoDao {
                 depoimento.setIdCliente(rs.getInt("ID_CLIENTE"));
                 depoimento.setDescricao(rs.getString("DESCRICAO"));
                 depoimento.setNomeCliente(rs.getString("NOME_CLIENTE"));
+                depoimento.setDataDepoimento(rs.getString("DT_DEPOIMENTO"));
 
                 depoimentos.add(depoimento);
             }
@@ -32,7 +33,7 @@ public class DepoimentoDao {
             throw new SQLException("Erro ao buscar depoimentos: " + e.getMessage(), e);
         }
 
-        return depoimentos; // Retorna a lista de depoimentos
+        return depoimentos;
     }
     public void inserirDepoimento(Depoimento depoimento) throws SQLException {
         String sql = "INSERT INTO T_ECO_DEPOIMENTOS (ID_CLIENTE, DESCRICAO) VALUES (?, ?)";
