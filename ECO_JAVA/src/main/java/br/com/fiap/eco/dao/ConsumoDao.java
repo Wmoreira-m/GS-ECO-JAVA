@@ -10,22 +10,42 @@ import java.util.List;
 public class ConsumoDao {
 
     public void inserirConsumo(Consumo consumo) throws SQLException {
-        String sql = "INSERT INTO T_ECO_CONSUMO_CLIENTE (ID_CLIENTE, CUSTO_MENSAL, KW_MES, DISTRIBUIDORA, TARIFA, DATA_CONSUMO, ID_ENDERECO) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO T_ECO_CONSUMO_CLIENTE (ID_CONSUMO_CLI, ID_CLIENTE, CUSTO_MENSAL, KW_MES, DISTRIBUIDORA, TARIFA, DATA_CONSUMO, ID_ENDERECO) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        String seqSql = "SELECT SEQ_ECO_CONSUMO_CLIENTE.NEXTVAL AS NEXT_ID FROM DUAL";
 
         try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement seqStmt = conn.prepareStatement(seqSql);
+             ResultSet rs = seqStmt.executeQuery()) {
 
-            stmt.setInt(1, consumo.getIdCliente());
-            stmt.setDouble(2, consumo.getCustoMensal());
-            stmt.setDouble(3, consumo.getKwMes());
-            stmt.setString(4, consumo.getDistribuidora());
-            stmt.setDouble(5, consumo.getTarifa());
-            stmt.setString(6, consumo.getDataConsumo());
-            stmt.setInt(7, consumo.getIdEndereco());
+            if (rs.next()) {
+                consumo.setIdConsumoCli(rs.getInt("NEXT_ID"));
+            } else {
+                throw new SQLException("Erro ao obter próximo valor da sequência.");
+            }
+        }
 
-            stmt.executeUpdate();
+        // Inserir o consumo no banco
+        try (Connection conn = ConexaoBanco.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, consumo.getIdConsumoCli());
+            stmt.setInt(2, consumo.getIdCliente());
+            stmt.setDouble(3, consumo.getCustoMensal());
+            stmt.setDouble(4, consumo.getKwMes());
+            stmt.setString(5, consumo.getDistribuidora());
+            stmt.setDouble(6, consumo.getTarifa());
+            stmt.setString(7, consumo.getDataConsumo());
+            stmt.setInt(8, consumo.getIdEndereco());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Falha ao inserir o consumo, nenhuma linha foi afetada.");
+            }
         }
     }
+
 
     public boolean clienteExiste(int idCliente) throws SQLException {
         String sql = "SELECT 1 FROM T_ECO_CLIENTE WHERE ID_CLIENTE = ?";

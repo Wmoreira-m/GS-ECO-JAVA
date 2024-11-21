@@ -5,6 +5,7 @@ import br.com.fiap.eco.model.Consumo;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -25,26 +26,32 @@ public class ConsumoResource {
                         .build();
             }
 
-
             if (!consumoDao.enderecoExiste(consumo.getIdEndereco())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço com ID " + consumo.getIdEndereco() + " não encontrado.\"}")
                         .build();
             }
-
+            
             consumoDao.inserirConsumo(consumo);
+
             UriBuilder builder = uriInfo.getAbsolutePathBuilder();
             builder.path(Integer.toString(consumo.getIdConsumoCli()));
 
             return Response.created(builder.build()).entity(consumo).build();
 
         } catch (SQLException e) {
-
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao criar consumo: " + e.getMessage() + "\"}")
                     .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\": \"Erro inesperado: " + e.getMessage() + "\"}")
+                    .build();
         }
     }
+
+
+
 
 
     @GET
