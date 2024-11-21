@@ -1,0 +1,203 @@
+DROP TABLE t_eco_cliente CASCADE CONSTRAINTS;
+DROP TABLE t_eco_consumo_cliente CASCADE CONSTRAINTS;
+DROP TABLE t_eco_consumo_simulacao CASCADE CONSTRAINTS;
+DROP TABLE t_eco_depoimentos CASCADE CONSTRAINTS;
+DROP TABLE t_eco_endereco CASCADE CONSTRAINTS;
+
+
+CREATE TABLE t_eco_cliente (
+    id_cliente   NUMBER(10) NOT NULL,
+    nome         VARCHAR2(40) NOT NULL,
+    email        VARCHAR2(30) NOT NULL,
+    senha        VARCHAR2(20) NOT NULL,
+    dt_ativacao  DATE NOT NULL
+);
+
+ALTER TABLE T_ECO_CLIENTE MODIFY (DT_ATIVACAO DEFAULT SYSDATE);
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY HH24:MI:SS';
+
+ALTER TABLE t_eco_cliente ADD CONSTRAINT t_isl_usuario_pk PRIMARY KEY (id_cliente);
+ALTER TABLE t_eco_cliente ADD CONSTRAINT un_email UNIQUE (email);
+
+CREATE TABLE t_eco_consumo_cliente (
+    id_consumo_cli  NUMBER(10) NOT NULL,
+    id_cliente      NUMBER(10) NOT NULL,
+    custo_mensal    NUMBER(12, 2),
+    kw_mes          NUMBER(12, 2) NOT NULL,
+    distribuidora   VARCHAR2(30) NOT NULL,
+    tarifa          NUMBER(10, 2) NOT NULL,
+    data_consumo    VARCHAR2(10) NOT NULL,
+    id_endereco     NUMBER(10) NOT NULL
+);
+
+ALTER TABLE t_eco_consumo_cliente ADD CONSTRAINT t_eco_consumo_cliente_pk PRIMARY KEY (id_consumo_cli, id_endereco);
+
+CREATE TABLE t_eco_consumo_simulacao (
+    id_consumo_sumi    NUMBER(10) NOT NULL,
+    id_cliente         NUMBER(10) NOT NULL,
+    custo_final        NUMBER(12, 2) NOT NULL,
+    qtd_placas         NUMBER(10) NOT NULL,
+    modelo_placa       VARCHAR2(30) NOT NULL,
+    kw_total_gerado    NUMBER(10, 2) NOT NULL,
+    economia_gerada    NUMBER(12, 2) NOT NULL,
+    total_investir     NUMBER(12, 2) NOT NULL,
+    id_consumo_cli     NUMBER(10) NOT NULL,
+    id_endereco        NUMBER(10) NOT NULL,
+    grid               VARCHAR2(10) NOT NULL,
+    dt_simulacao       VARCHAR2(10) NOT NULL
+);
+
+ALTER TABLE t_eco_consumo_simulacao ADD CONSTRAINT t_eco_consumo_simulacao_pk PRIMARY KEY (id_consumo_sumi);
+
+CREATE TABLE t_eco_depoimentos (
+    id_depoimento  NUMBER(10) NOT NULL,
+    id_cliente     NUMBER(10) NOT NULL,
+    descricao      VARCHAR2(450) NOT NULL,
+    dt_depoimento  DATE NOT NULL
+);
+
+ALTER TABLE t_eco_depoimentos MODIFY (dt_depoimento DEFAULT SYSDATE);
+
+ALTER TABLE t_eco_depoimentos ADD CONSTRAINT t_eco_depoimentos_pk PRIMARY KEY (id_depoimento);
+
+CREATE TABLE t_eco_endereco (
+    id_endereco    NUMBER(10) NOT NULL,
+    cep            VARCHAR2(9),
+    apelido_local  VARCHAR2(20),
+    localidade     VARCHAR2(50) NOT NULL,
+    uf             CHAR(2) NOT NULL,
+    regiao         VARCHAR2(15),
+    insolacao_md   VARCHAR2(15) NOT NULL,
+    id_cliente     NUMBER(10) NOT NULL
+);
+
+ALTER TABLE t_eco_endereco ADD CONSTRAINT t_isl_endereco_pk PRIMARY KEY (id_endereco);
+
+
+ALTER TABLE t_eco_depoimentos
+    ADD CONSTRAINT fk_id_cliente FOREIGN KEY (id_cliente)
+    REFERENCES t_eco_cliente (id_cliente)
+    ON DELETE CASCADE;
+
+ALTER TABLE t_eco_consumo_cliente
+    ADD CONSTRAINT fk_id_cliente_consumo FOREIGN KEY (id_cliente)
+    REFERENCES t_eco_cliente (id_cliente)
+    ON DELETE CASCADE;
+
+ALTER TABLE t_eco_consumo_simulacao
+    ADD CONSTRAINT fk_id_consumo_data_endereco FOREIGN KEY (id_consumo_cli, id_endereco)
+    REFERENCES t_eco_consumo_cliente (id_consumo_cli, id_endereco)
+    ON DELETE CASCADE;
+
+ALTER TABLE t_eco_consumo_cliente
+    ADD CONSTRAINT fk_id_endereco_consumo FOREIGN KEY (id_endereco)
+    REFERENCES t_eco_endereco (id_endereco)
+    ON DELETE CASCADE;
+
+ALTER TABLE t_eco_endereco
+    ADD CONSTRAINT t_isl_endereco_t_isl_usuario_fk FOREIGN KEY (id_cliente)
+    REFERENCES t_eco_cliente (id_cliente)
+    ON DELETE CASCADE;
+
+DROP SEQUENCE seq_eco_cliente;
+DROP SEQUENCE seq_eco_consumo_cliente;
+DROP SEQUENCE seq_eco_consumo_simulacao;
+DROP SEQUENCE seq_eco_depoimentos;
+DROP SEQUENCE seq_eco_endereco;
+
+CREATE SEQUENCE seq_eco_cliente
+
+    START WITH 1
+    INCREMENT BY 1
+    NOCACHE;
+
+CREATE OR REPLACE TRIGGER trg_eco_cliente
+    BEFORE INSERT ON t_eco_cliente
+    FOR EACH ROW
+BEGIN
+    IF :NEW.id_cliente IS NULL THEN
+        SELECT seq_eco_cliente.NEXTVAL INTO :NEW.id_cliente FROM DUAL;
+    END IF;
+END;
+/
+
+CREATE SEQUENCE seq_eco_consumo_cliente
+    START WITH 1
+    INCREMENT BY 1
+    NOCACHE;
+
+CREATE OR REPLACE TRIGGER trg_eco_consumo_cliente
+    BEFORE INSERT ON t_eco_consumo_cliente
+    FOR EACH ROW
+BEGIN
+    IF :NEW.id_consumo_cli IS NULL THEN
+        SELECT seq_eco_consumo_cliente.NEXTVAL INTO :NEW.id_consumo_cli FROM DUAL;
+    END IF;
+END;
+/
+
+CREATE SEQUENCE seq_eco_consumo_simulacao
+    START WITH 1
+    INCREMENT BY 1
+    NOCACHE;
+
+CREATE OR REPLACE TRIGGER trg_eco_consumo_simulacao
+    BEFORE INSERT ON t_eco_consumo_simulacao
+    FOR EACH ROW
+BEGIN
+    IF :NEW.id_consumo_sumi IS NULL THEN
+        SELECT seq_eco_consumo_simulacao.NEXTVAL INTO :NEW.id_consumo_sumi FROM DUAL;
+    END IF;
+END;
+/
+
+CREATE SEQUENCE seq_eco_depoimentos
+    START WITH 1
+    INCREMENT BY 1
+    NOCACHE;
+
+CREATE OR REPLACE TRIGGER trg_eco_depoimentos
+    BEFORE INSERT ON t_eco_depoimentos
+    FOR EACH ROW
+BEGIN
+    IF :NEW.id_depoimento IS NULL THEN
+        SELECT seq_eco_depoimentos.NEXTVAL INTO :NEW.id_depoimento FROM DUAL;
+    END IF;
+END;
+/
+
+CREATE SEQUENCE seq_eco_endereco
+    START WITH 1
+    INCREMENT BY 1
+    NOCACHE;
+
+CREATE OR REPLACE TRIGGER trg_eco_endereco
+    BEFORE INSERT ON t_eco_endereco
+    FOR EACH ROW
+BEGIN
+    IF :NEW.id_endereco IS NULL THEN
+        SELECT seq_eco_endereco.NEXTVAL INTO :NEW.id_endereco FROM DUAL;
+    END IF;
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER trg_dt_ativacao_default
+BEFORE INSERT ON T_ECO_CLIENTE
+FOR EACH ROW
+BEGIN
+    IF :NEW.DT_ATIVACAO IS NULL THEN
+        :NEW.DT_ATIVACAO := SYSDATE;
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_dt_depoimento_default
+BEFORE INSERT ON T_ECO_DEPOIMENTOS
+FOR EACH ROW
+BEGIN
+    IF :NEW.DT_DEPOIMENTO IS NULL THEN
+        :NEW.DT_DEPOIMENTO := SYSDATE;
+    END IF;
+END;
+/

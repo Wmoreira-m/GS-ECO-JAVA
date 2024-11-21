@@ -14,7 +14,7 @@ public class ConsumoSimulacao {
     private String grid;
     private String dtSimulacao;
 
-    // Construtor completo, getters e setters
+
     public ConsumoSimulacao(int idConsumoSimu, int idCliente, double custoFinal, int qtdPlacas, String modeloPlaca,
                             double kwTotalGerado, double economiaGerada, double totalInvestir, int idConsumoCli,
                             int idEndereco, String grid, String dtSimulacao) {

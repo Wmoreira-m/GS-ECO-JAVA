@@ -29,7 +29,6 @@ public class DepoimentoResource {
             return Response.ok(depoimentos).build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("{\"message\": \"Erro ao buscar depoimentos.\"}")
                     .build();
@@ -54,7 +53,6 @@ public class DepoimentoResource {
 
             UriBuilder builder = uriInfo.getAbsolutePathBuilder();
             builder.path(Integer.toString(depoimento.getIdDepoimento()));
-
 
             return Response.created(builder.build()).entity(depoimento).build();
 

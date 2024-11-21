@@ -9,17 +9,14 @@ import java.net.URI;
 
     public class Main {
 
-    // URL base do servidor
     public static final String BASE_URI = "http://localhost:8080/ECO/";
 
     public static HttpServer startServer() {
-        // Configura o pacote onde estão os recursos
         final ResourceConfig rc = new ResourceConfig().packages("br.com.fiap.eco.resource");
         rc.register(CorsFilter.class);
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
-
 
     public static void main(String[] args) {
         final HttpServer server = startServer();
@@ -27,7 +24,6 @@ import java.net.URI;
         try {
             Thread.currentThread().join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }

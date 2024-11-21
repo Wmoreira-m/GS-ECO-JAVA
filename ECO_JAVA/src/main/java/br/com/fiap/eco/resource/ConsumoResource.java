@@ -5,7 +5,6 @@ import br.com.fiap.eco.model.Consumo;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 
 
@@ -19,7 +18,6 @@ public class ConsumoResource {
     @POST
     public Response criarConsumo(Consumo consumo, @Context UriInfo uriInfo) {
         try {
-
             if (!consumoDao.clienteExiste(consumo.getIdCliente())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente com ID " + consumo.getIdCliente() + " não encontrado.\"}")
@@ -31,7 +29,7 @@ public class ConsumoResource {
                         .entity("{\"message\": \"Endereço com ID " + consumo.getIdEndereco() + " não encontrado.\"}")
                         .build();
             }
-            
+
             consumoDao.inserirConsumo(consumo);
 
             UriBuilder builder = uriInfo.getAbsolutePathBuilder();
@@ -50,10 +48,6 @@ public class ConsumoResource {
         }
     }
 
-
-
-
-
     @GET
     @Path("/cliente/{idCliente}/endereco/{idEndereco}")
     public Response buscarConsumosPorClienteEEndereco(@PathParam("idCliente") int idCliente, @PathParam("idEndereco") int idEndereco) {
@@ -67,7 +61,6 @@ public class ConsumoResource {
                         .build();
             }
 
-
             boolean enderecoExisteParaCliente = consumoDao.enderecoExiste(idEndereco);
 
             if (!enderecoExisteParaCliente) {
@@ -76,9 +69,7 @@ public class ConsumoResource {
                         .build();
             }
 
-
             List<Consumo> consumos = consumoDao.buscarConsumosPorClienteEEndereco(idCliente, idEndereco);
-
 
             if (consumos.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -99,7 +90,6 @@ public class ConsumoResource {
         }
     }
 
-
     @PUT
     @Path("/cliente/{idCliente}/endereco/{idEndereco}")
     public Response atualizarConsumo(@PathParam("idCliente") int idCliente, @PathParam("idEndereco") int idEndereco, Consumo consumoAtualizado) {
@@ -112,7 +102,6 @@ public class ConsumoResource {
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
-
 
             boolean enderecoExisteParaCliente = consumoDao.enderecoExiste(idEndereco);
 
@@ -149,20 +138,17 @@ public class ConsumoResource {
                         .build();
             }
 
-
             if (!consumoDao.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço não encontrado.\"}")
                         .build();
             }
 
-
             if (!consumoDao.consumoExiste(idCliente, idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Nenhum consumo encontrado para o cliente e endereço especificados.\"}")
                         .build();
             }
-
 
             consumoDao.removerConsumo(idCliente, idEndereco);
 
@@ -171,7 +157,6 @@ public class ConsumoResource {
                     .build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao remover o consumo.\"}")
                     .build();

@@ -3,8 +3,7 @@ package br.com.fiap.eco.dao;
 import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.model.Consumo;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class ConsumoDao {
@@ -26,7 +25,6 @@ public class ConsumoDao {
             }
         }
 
-        // Inserir o consumo no banco
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -45,7 +43,6 @@ public class ConsumoDao {
             }
         }
     }
-
 
     public boolean clienteExiste(int idCliente) throws SQLException {
         String sql = "SELECT 1 FROM T_ECO_CLIENTE WHERE ID_CLIENTE = ?";
@@ -70,8 +67,6 @@ public class ConsumoDao {
             }
         }
     }
-
-
 
     public List<Consumo> buscarConsumosPorClienteEEndereco(int idCliente, int idEndereco) throws SQLException {
         String sql = "SELECT * FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CLIENTE = ? AND ID_ENDERECO = ?";

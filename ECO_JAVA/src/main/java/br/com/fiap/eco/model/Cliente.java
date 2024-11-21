@@ -28,9 +28,6 @@ public class Cliente {
     }
 
 
-
-    // Getters e Setters
-
     public int getIdCliente() {
         return idCliente;
     }

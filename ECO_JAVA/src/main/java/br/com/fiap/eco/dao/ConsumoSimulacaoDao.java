@@ -2,12 +2,8 @@ package br.com.fiap.eco.dao;
 
 import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.model.ConsumoSimulacao;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class ConsumoSimulacaoDao {
 
@@ -15,7 +11,6 @@ public class ConsumoSimulacaoDao {
         String sql = "INSERT INTO T_ECO_CONSUMO_SIMULACAO (ID_CLIENTE, CUSTO_FINAL, QTD_PLACAS, MODELO_PLACA, " +
                 "KW_TOTAL_GERADO, ECONOMIA_GERADA, TOTAL_INVESTIR, ID_CONSUMO_CLI, ID_ENDERECO, GRID, DT_SIMULACAO) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
 
         dataConsumo = buscarDataConsumo(simulacao.getIdConsumoCli());
 
@@ -57,7 +52,6 @@ public class ConsumoSimulacaoDao {
         return false;
     }
 
-
     public void removerSimulacaoEspecifica(int idCliente, int idEndereco, int idConsumoSimu) throws SQLException {
         String sql = "DELETE FROM T_ECO_CONSUMO_SIMULACAO WHERE ID_CLIENTE = ? AND ID_ENDERECO = ? AND ID_CONSUMO_SUMI = ?";
 
@@ -75,7 +69,6 @@ public class ConsumoSimulacaoDao {
         }
     }
 
-
     public boolean consumoExiste(int idConsumoCli) throws SQLException {
         String sql = "SELECT 1 FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CONSUMO_CLI = ?";
         try (Connection conn = ConexaoBanco.getConnection();
@@ -88,7 +81,6 @@ public class ConsumoSimulacaoDao {
         }
     }
 
-    // Obter a data do consumo
     public String buscarDataConsumo(int idConsumoCli) throws SQLException {
         String sql = "SELECT DATA_CONSUMO FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CONSUMO_CLI = ?";
         try (Connection conn = ConexaoBanco.getConnection();
@@ -214,8 +206,6 @@ public class ConsumoSimulacaoDao {
         }
         return simulacoes;
     }
-
-
 
     public void removerSimulacao(int idCliente, int idEndereco) throws SQLException {
         String sql = "DELETE FROM T_ECO_CONSUMO_SIMULACAO WHERE ID_CLIENTE = ? AND ID_ENDERECO = ?";

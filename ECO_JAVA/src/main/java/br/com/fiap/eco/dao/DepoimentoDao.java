@@ -3,8 +3,7 @@ package br.com.fiap.eco.dao;
 import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.model.Depoimento;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DepoimentoDao {
 
@@ -35,6 +34,7 @@ public class DepoimentoDao {
 
         return depoimentos;
     }
+
     public void inserirDepoimento(Depoimento depoimento) throws SQLException {
         String sql = "INSERT INTO T_ECO_DEPOIMENTOS (ID_CLIENTE, DESCRICAO) VALUES (?, ?)";
 
@@ -47,6 +47,7 @@ public class DepoimentoDao {
             stmt.executeUpdate();
         }
     }
+
     public boolean existeCliente(int idCliente) throws SQLException {
         String sql = "SELECT 1 FROM t_eco_cliente WHERE id_cliente = ?";
 

@@ -31,7 +31,6 @@ public class ClienteResource {
         }
     }
 
-
     @GET
     @Path("/{id}")
     public Response buscarClientePorId(@PathParam("id") int id) {
@@ -93,7 +92,6 @@ public class ClienteResource {
         }
     }
 
-
     @GET
     public Response listarClientes() {
         try {
@@ -108,13 +106,11 @@ public class ClienteResource {
             return Response.ok(clientes).build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("{\"message\": \"Erro ao buscar clientes: " + e.getMessage() + "\"}")
                     .build();
         }
     }
-
 
     @PUT
     @Path("/{id}")
@@ -130,7 +126,6 @@ public class ClienteResource {
                     .build();
         }
     }
-
 
     @DELETE
     @Path("/{id}")

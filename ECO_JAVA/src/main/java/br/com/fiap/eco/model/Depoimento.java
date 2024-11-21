@@ -1,6 +1,5 @@
 package br.com.fiap.eco.model;
 
-import java.sql.Timestamp;
 
 public class Depoimento {
     private int idDepoimento;

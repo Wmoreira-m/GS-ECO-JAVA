@@ -3,8 +3,7 @@ package br.com.fiap.eco.dao;
 import br.com.fiap.eco.connection.ConexaoBanco;
 import br.com.fiap.eco.model.Endereco;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EnderecoDao {
 

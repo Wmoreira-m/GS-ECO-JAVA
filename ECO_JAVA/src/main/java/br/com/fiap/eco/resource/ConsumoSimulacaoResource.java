@@ -24,13 +24,11 @@ public class ConsumoSimulacaoResource {
                         .build();
             }
 
-
             if (!simulacaoDAO.enderecoExiste(simulacao.getIdEndereco())) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço com ID " + simulacao.getIdEndereco() + " não encontrado.\"}")
                         .build();
             }
-
 
             if (!simulacaoDAO.consumoExiste(simulacao.getIdConsumoCli())) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -38,27 +36,20 @@ public class ConsumoSimulacaoResource {
                         .build();
             }
 
-
             String dataConsumo = simulacaoDAO.buscarDataConsumo(simulacao.getIdConsumoCli());
 
-
             simulacaoDAO.criarSimulacao(simulacao, dataConsumo);
-
 
             return Response.status(Response.Status.CREATED)
                     .entity(simulacao)
                     .build();
 
         } catch (SQLException e) {
-
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao criar a simulação: " + e.getMessage() + "\"}")
                     .build();
         }
     }
-
-
 
     @PUT
     @Path("/cliente/{idCliente}/endereco/{idEndereco}/simulacao/{idConsumoSimu}")
@@ -67,16 +58,13 @@ public class ConsumoSimulacaoResource {
             @PathParam("idEndereco") int idEndereco,
             @PathParam("idConsumoSimu") int idConsumoSimu,
             ConsumoSimulacao simulacaoAtualizada) {
-
         try {
-
             ConsumoSimulacao simulacaoExistente = simulacaoDAO.buscarSimulacaoPorId(idConsumoSimu);
             if (simulacaoExistente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Simulação com ID " + idConsumoSimu + " não encontrada.\"}")
                         .build();
             }
-
 
             if (simulacaoExistente.getIdCliente() != idCliente || simulacaoExistente.getIdEndereco() != idEndereco) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -88,16 +76,13 @@ public class ConsumoSimulacaoResource {
                 simulacaoExistente.setGrid(simulacaoAtualizada.getGrid());
             }
 
-
             String dataConsumo = simulacaoDAO.buscarDataConsumo(simulacaoExistente.getIdConsumoCli());
-
 
             simulacaoDAO.atualizarSimulacao(simulacaoExistente, dataConsumo);
 
             return Response.ok(simulacaoExistente).build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao atualizar a simulação.\"}")
                     .build();
@@ -111,20 +96,17 @@ public class ConsumoSimulacaoResource {
             @PathParam("idEndereco") int idEndereco) {
 
         try {
-
             if (!simulacaoDAO.clienteExiste(idCliente)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
 
-
             if (!simulacaoDAO.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Endereço não encontrado.\"}")
                         .build();
             }
-
 
             List<ConsumoSimulacao> simulacoes = simulacaoDAO.buscarSimulacoes(idCliente, idEndereco);
 
@@ -133,11 +115,9 @@ public class ConsumoSimulacaoResource {
                         .entity("{\"message\": \"Nenhuma simulação encontrada para o cliente e endereço especificados.\"}")
                         .build();
             }
-
             return Response.ok(simulacoes).build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao buscar simulações.\"}")
                     .build();
@@ -152,13 +132,11 @@ public class ConsumoSimulacaoResource {
             @PathParam("idConsumoSimu") int idConsumoSimu) {
 
         try {
-
             if (!simulacaoDAO.clienteExiste(idCliente)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente não encontrado.\"}")
                         .build();
             }
-
 
             if (!simulacaoDAO.enderecoExiste(idEndereco)) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -166,21 +144,18 @@ public class ConsumoSimulacaoResource {
                         .build();
             }
 
-
             if (!simulacaoDAO.simulacaoExiste(idCliente, idEndereco, idConsumoSimu)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Simulação não encontrada.\"}")
                         .build();
             }
 
-
             simulacaoDAO.removerSimulacaoEspecifica(idCliente, idEndereco, idConsumoSimu);
 
             return Response.ok("{\"message\": \"Simulação deletada com sucesso.\"}")
                     .build();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {;
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao deletar a simulação.\"}")
                     .build();

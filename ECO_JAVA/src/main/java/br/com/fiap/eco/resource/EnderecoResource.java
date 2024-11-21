@@ -38,11 +38,9 @@ public class EnderecoResource {
                         .entity("{\"message\": \"Nenhum endereço encontrado.\"}")
                         .build();
             }
-
             return Response.ok(enderecos).build();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao buscar endereços: " + e.getMessage() + "\"}")
                     .build();
@@ -74,19 +72,17 @@ public class EnderecoResource {
         }
     }
 
-
     @GET
     @Path("/{idCliente}")
     public Response buscarEnderecosPorCliente(@PathParam("idCliente") int idCliente) {
         try {
 
-            boolean clienteExiste = enderecoDao.verificarClienteExistente(idCliente); // Método que você terá que implementar
+            boolean clienteExiste = enderecoDao.verificarClienteExistente(idCliente);
             if (!clienteExiste) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"message\": \"Cliente com ID " + idCliente + " não encontrado.\"}")
                         .build();
             }
-
 
             List<Endereco> enderecos = enderecoDao.buscarEnderecosPorCliente(idCliente);
 
@@ -96,7 +92,6 @@ public class EnderecoResource {
                         .build();
             }
 
-
             return Response.ok(enderecos).build();
 
         } catch (SQLException e) {
@@ -105,7 +100,6 @@ public class EnderecoResource {
                     .build();
         }
     }
-
 
     @DELETE
     @Path("/{id}")
@@ -120,7 +114,6 @@ public class EnderecoResource {
             enderecoDao.removerEndereco(id);
             return Response.status(Response.Status.NOT_FOUND).entity("Endereço removido com sucesso.").build();
         } catch (SQLException e) {
-            e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao atualizar endereço\"}")
                     .build();
