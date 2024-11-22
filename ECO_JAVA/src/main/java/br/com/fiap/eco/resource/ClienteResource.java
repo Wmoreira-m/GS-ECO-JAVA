@@ -1,6 +1,6 @@
 package br.com.fiap.eco.resource;
 
-import br.com.fiap.eco.dao.ClienteDao;
+import br.com.fiap.eco.bo.ClienteBo;
 import br.com.fiap.eco.model.Cliente;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
@@ -12,13 +12,12 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class ClienteResource {
 
-    private ClienteDao clienteDao = new ClienteDao();
-
+    private ClienteBo clienteBO = new ClienteBo();
 
     @POST
     public Response criarCliente(Cliente cliente, @Context UriInfo uriInfo) {
         try {
-            clienteDao.inserirCliente(cliente);
+            clienteBO.inserirCliente(cliente);
 
             UriBuilder builder = uriInfo.getAbsolutePathBuilder();
             builder.path(Integer.toString(cliente.getIdCliente()));
@@ -35,7 +34,7 @@ public class ClienteResource {
     @Path("/{id}")
     public Response buscarClientePorId(@PathParam("id") int id) {
         try {
-            Cliente cliente = clienteDao.buscarClientePorId(id);
+            Cliente cliente = clienteBO.buscarClientePorId(id);
             if (cliente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Cliente não encontrado. Tente Novamente!")
@@ -54,7 +53,7 @@ public class ClienteResource {
     @Path("/email/{email}")
     public Response buscarClientePorEmail(@PathParam("email") String email) {
         try {
-            Cliente cliente = clienteDao.buscarClientePorEmail(email);
+            Cliente cliente = clienteBO.buscarClientePorEmail(email);
             if (cliente == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Cliente não encontrado. Tente Novamente!")
@@ -73,7 +72,7 @@ public class ClienteResource {
     @Path("/login")
     public Response loginCliente(@QueryParam("email") String email, @QueryParam("senha") String senha) {
         try {
-            Cliente cliente = clienteDao.buscarClientePorLogin(email, senha);
+            Cliente cliente = clienteBO.buscarClientePorLogin(email, senha);
             return Response.ok(cliente).build();
         } catch (SQLException e) {
             String errorMessage = e.getMessage();
@@ -95,7 +94,7 @@ public class ClienteResource {
     @GET
     public Response listarClientes() {
         try {
-            List<Cliente> clientes = clienteDao.listar();
+            List<Cliente> clientes = clienteBO.listarClientes();
 
             if (clientes.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -106,7 +105,7 @@ public class ClienteResource {
             return Response.ok(clientes).build();
 
         } catch (SQLException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\": \"Erro ao buscar clientes: " + e.getMessage() + "\"}")
                     .build();
         }
@@ -117,7 +116,7 @@ public class ClienteResource {
     public Response atualizarCliente(@PathParam("id") int id, Cliente cliente) {
         try {
             cliente.setIdCliente(id);
-            clienteDao.atualizarCliente(cliente);
+            clienteBO.atualizarCliente(cliente);
             return Response.ok(cliente).build();
 
         } catch (SQLException e) {
@@ -131,9 +130,9 @@ public class ClienteResource {
     @Path("/{id}")
     public Response removerCliente(@PathParam("id") int id) {
         try {
-            clienteDao.remover(id);
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\": \"Cliente com id:" + id + "removido com sucesso\"}")
+            clienteBO.removerCliente(id);
+            return Response.status(Response.Status.OK)
+                    .entity("{\"message\": \"Cliente com id: " + id + " removido com sucesso\"}")
                     .build();
 
         } catch (SQLException e) {

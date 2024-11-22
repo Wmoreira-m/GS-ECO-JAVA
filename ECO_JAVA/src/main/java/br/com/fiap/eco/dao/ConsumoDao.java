@@ -84,6 +84,7 @@ public class ConsumoDao {
                     Consumo consumo = new Consumo();
                     consumo.setIdConsumoCli(rs.getInt("ID_CONSUMO_CLI"));
                     consumo.setIdCliente(rs.getInt("ID_CLIENTE"));
+                    consumo.setIdEndereco(rs.getInt("ID_ENDERECO"));
                     consumo.setCustoMensal(rs.getDouble("CUSTO_MENSAL"));
                     consumo.setKwMes(rs.getDouble("KW_MES"));
                     consumo.setDistribuidora(rs.getString("DISTRIBUIDORA"));
@@ -108,56 +109,62 @@ public class ConsumoDao {
         }
     }
 
+    public boolean consumoExistePorId(int idConsumoCli, int idCliente, int idEndereco) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CONSUMO_CLI = ? AND ID_CLIENTE = ? AND ID_ENDERECO = ?";
+        try (Connection conn = ConexaoBanco.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idConsumoCli);
+            stmt.setInt(2, idCliente);
+            stmt.setInt(3, idEndereco);
 
-    public void atualizarConsumo(int idCliente, int idEndereco, Consumo consumoAtualizado) throws SQLException {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public void atualizarConsumoEspecifico(int idConsumoCli, int idCliente, int idEndereco, Consumo consumoAtualizado) throws SQLException {
         String sql = "UPDATE T_ECO_CONSUMO_CLIENTE SET " +
-                "CUSTO_MENSAL = ?, " +
-                "KW_MES = ?, " +
-                "DISTRIBUIDORA = ?, " +
-                "TARIFA = ?, " +
-                "DATA_CONSUMO = ? " +
-                "WHERE ID_CLIENTE = ? AND ID_ENDERECO = ?";
+                "CUSTO_MENSAL = ?, KW_MES = ?, DISTRIBUIDORA = ?, TARIFA = ?, DATA_CONSUMO = ? " +
+                "WHERE ID_CONSUMO_CLI = ? AND ID_CLIENTE = ? AND ID_ENDERECO = ?";
 
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-
             stmt.setDouble(1, consumoAtualizado.getCustoMensal());
             stmt.setDouble(2, consumoAtualizado.getKwMes());
             stmt.setString(3, consumoAtualizado.getDistribuidora());
             stmt.setDouble(4, consumoAtualizado.getTarifa());
             stmt.setString(5, consumoAtualizado.getDataConsumo());
-            stmt.setInt(6, idCliente);
-            stmt.setInt(7, idEndereco);
-
+            stmt.setInt(6, idConsumoCli);
+            stmt.setInt(7, idCliente);
+            stmt.setInt(8, idEndereco);
 
             int rowsUpdated = stmt.executeUpdate();
-
 
             if (rowsUpdated == 0) {
                 throw new SQLException("Erro ao atualizar o consumo: Nenhuma linha foi afetada.");
             }
-        } catch (SQLException e) {
-            throw new SQLException("Erro ao atualizar o consumo.", e);
         }
     }
 
-    public void removerConsumo(int idCliente, int idEndereco) throws SQLException {
-        String sql = "DELETE FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CLIENTE = ? AND ID_ENDERECO = ?";
+    public void removerConsumoEspecifico(int idConsumoCli, int idCliente, int idEndereco) throws SQLException {
+        String sql = "DELETE FROM T_ECO_CONSUMO_CLIENTE WHERE ID_CONSUMO_CLI = ? AND ID_CLIENTE = ? AND ID_ENDERECO = ?";
 
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idConsumoCli);
+            stmt.setInt(2, idCliente);
+            stmt.setInt(3, idEndereco);
 
-            stmt.setInt(1, idCliente);
-            stmt.setInt(2, idEndereco);
+            int rowsDeleted = stmt.executeUpdate();
 
-            int rowsUpdated = stmt.executeUpdate();
-
-            if (rowsUpdated == 0) {
+            if (rowsDeleted == 0) {
                 throw new SQLException("Erro ao remover o consumo: Nenhuma linha foi afetada.");
             }
-        } catch (SQLException e) {
-            throw new SQLException("Erro ao remover o consumo.", e);
         }
     }
 }

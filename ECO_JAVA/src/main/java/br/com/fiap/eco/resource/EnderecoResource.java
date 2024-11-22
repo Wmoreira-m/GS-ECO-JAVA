@@ -1,6 +1,6 @@
 package br.com.fiap.eco.resource;
 
-import br.com.fiap.eco.dao.EnderecoDao;
+import br.com.fiap.eco.bo.EnderecoBo;
 import br.com.fiap.eco.model.Endereco;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
@@ -12,17 +12,21 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class EnderecoResource {
 
-    private EnderecoDao enderecoDao = new EnderecoDao();
+    private final EnderecoBo enderecoBo = new EnderecoBo();
 
     @POST
     public Response criarEndereco(Endereco endereco, @Context UriInfo uriInfo) {
         try {
-            enderecoDao.inserirEndereco(endereco);
+            enderecoBo.criarEndereco(endereco);
             UriBuilder builder = uriInfo.getAbsolutePathBuilder();
             builder.path(Integer.toString(endereco.getIdEndereco()));
             return Response.created(builder.build()).entity(endereco).build();
-        } catch (SQLException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"message\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("{\"message\": \"Erro ao criar endereço: " + e.getMessage() + "\"}")
                     .build();
         }
@@ -31,18 +35,15 @@ public class EnderecoResource {
     @GET
     public Response listarEnderecos() {
         try {
-            List<Endereco> enderecos = enderecoDao.listar();
-
-            if (enderecos.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"Nenhum endereço encontrado.\"}")
-                        .build();
-            }
+            List<Endereco> enderecos = enderecoBo.listarEnderecos();
             return Response.ok(enderecos).build();
-
-        } catch (SQLException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\": \"Erro ao buscar endereços: " + e.getMessage() + "\"}")
+                    .entity("{\"message\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"message\": \"Erro ao listar endereços: " + e.getMessage() + "\"}")
                     .build();
         }
     }
@@ -51,23 +52,15 @@ public class EnderecoResource {
     @Path("/{id}")
     public Response atualizarEndereco(@PathParam("id") int id, Endereco endereco) {
         try {
-
-            Endereco enderecoExistente = enderecoDao.buscarEnderecoPorId(id);
-            if (enderecoExistente == null) {
-
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"Endereço não encontrado\"}")
-                        .build();
-            }
-
-            endereco.setIdEndereco(id);
-            enderecoDao.atualizarEndereco(endereco);
-
+            enderecoBo.atualizarEndereco(id, endereco);
             return Response.ok(endereco).build();
-        } catch (SQLException e) {
-
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\": \"Erro ao atualizar endereço\"}")
+                    .entity("{\"message\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"message\": \"Erro ao atualizar endereço: " + e.getMessage() + "\"}")
                     .build();
         }
     }
@@ -76,26 +69,14 @@ public class EnderecoResource {
     @Path("/{idCliente}")
     public Response buscarEnderecosPorCliente(@PathParam("idCliente") int idCliente) {
         try {
-
-            boolean clienteExiste = enderecoDao.verificarClienteExistente(idCliente);
-            if (!clienteExiste) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"Cliente com ID " + idCliente + " não encontrado.\"}")
-                        .build();
-            }
-
-            List<Endereco> enderecos = enderecoDao.buscarEnderecosPorCliente(idCliente);
-
-            if (enderecos.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"Nenhum endereço encontrado para o cliente com ID: " + idCliente + "\"}")
-                        .build();
-            }
-
+            List<Endereco> enderecos = enderecoBo.buscarEnderecosPorCliente(idCliente);
             return Response.ok(enderecos).build();
-
-        } catch (SQLException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("{\"message\": \"Erro ao buscar endereços do cliente: " + e.getMessage() + "\"}")
                     .build();
         }
@@ -103,21 +84,18 @@ public class EnderecoResource {
 
     @DELETE
     @Path("/{id}")
-    public Response removeEndereco(@PathParam("id") int id) {
+    public Response removerEndereco(@PathParam("id") int id) {
         try {
-            Endereco endereco = enderecoDao.buscarEnderecoPorId(id);
-            if (endereco == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("{\"message\": \"Endereço não encontrado\"}")
-                        .build();
-            }
-            enderecoDao.removerEndereco(id);
-            return Response.status(Response.Status.NOT_FOUND).entity("Endereço removido com sucesso.").build();
-        } catch (SQLException e) {
+            enderecoBo.removerEndereco(id);
+            return Response.ok("{\"message\": \"Endereço removido com sucesso.\"}").build();
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\": \"Erro ao atualizar endereço\"}")
+                    .entity("{\"message\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"message\": \"Erro ao remover endereço: " + e.getMessage() + "\"}")
                     .build();
         }
     }
 }
-

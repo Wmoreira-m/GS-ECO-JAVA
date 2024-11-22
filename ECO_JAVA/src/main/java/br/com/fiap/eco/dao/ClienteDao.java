@@ -145,6 +145,22 @@ public class ClienteDao {
 
     public void atualizarCliente(Cliente cliente) throws SQLException {
         String sql = "UPDATE T_ECO_CLIENTE SET NOME = ?, EMAIL = ?, SENHA = ?, DT_ATIVACAO = ? WHERE ID_CLIENTE = ?";
+        String verificaEmailSql = "SELECT ID_CLIENTE FROM T_ECO_CLIENTE WHERE EMAIL = ?";
+        try (Connection conn = ConexaoBanco.getConnection();
+             PreparedStatement verificaStmt = conn.prepareStatement(verificaEmailSql)) {
+
+            verificaStmt.setString(1, cliente.getEmail());
+
+            try (ResultSet rs = verificaStmt.executeQuery()) {
+                if (rs.next()) {
+                    int clienteIdComMesmoEmail = rs.getInt("ID_CLIENTE");
+
+                    if (clienteIdComMesmoEmail != cliente.getIdCliente()) {
+                        throw new SQLException("O e-mail informado já está sendo utilizado por outro cliente.");
+                    }
+                }
+            }
+        }
 
         if (cliente.getDtAtivacao() == null) {
             String consultaSql = "SELECT DT_ATIVACAO FROM T_ECO_CLIENTE WHERE ID_CLIENTE = ?";
@@ -154,7 +170,6 @@ public class ClienteDao {
                 stmt.setInt(1, cliente.getIdCliente());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         cliente.setDtAtivacao(dateFormat.format(rs.getTimestamp("DT_ATIVACAO")));
                     } else {
@@ -199,6 +214,9 @@ public class ClienteDao {
             }
 
         } catch (SQLException e) {
+            if ("Cliente não encontrado para remoção.".equals(e.getMessage())) {
+                throw e;
+            }
             throw new SQLException("Erro ao remover cliente.", e);
         }
     }
